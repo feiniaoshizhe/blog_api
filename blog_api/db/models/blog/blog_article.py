@@ -6,10 +6,13 @@ Author: youshun xu
 File: BlogArticle
 Time: 2024/12/17 13:49
 """
+from typing import List
+
 from sqlalchemy import String, Text, Integer
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from blog_api.db.base import Base
+from blog_api.db.models.blog.blog_comment import BlogComment
 
 
 class BlogArticle(Base):
@@ -25,4 +28,13 @@ class BlogArticle(Base):
     content: Mapped[str] = mapped_column(
         "content", Text, nullable=False, comment="内容"
     )
-    traffic: Mapped[int] = mapped_column("traffic", Integer, default=1)
+    traffic: Mapped[int] = mapped_column(
+        "traffic", Integer, default=1, comment="访问量"
+    )
+    comment_num: Mapped[int] = mapped_column(
+        "comment_num", Integer, default=0, comment="评论数"
+    )
+    remark: Mapped[str] = mapped_column(
+        "remark", String(256), nullable=True, comment="备注"
+    )
+    comments: Mapped[List[BlogComment]] = relationship()

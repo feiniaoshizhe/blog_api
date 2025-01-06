@@ -1,6 +1,6 @@
 import datetime
 
-from sqlalchemy import func, DateTime, Boolean
+from sqlalchemy import func, DateTime, Boolean, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from blog_api.db.meta import meta
@@ -23,13 +23,10 @@ class Base(DeclarativeBase):
         onupdate=func.now(),
         comment="更新时间",
     )
-    # create_by: Mapped[str] = mapped_column(
-    #     String(256), default=current_active_user.id, comment="创建人"
-    # )
-    # update_by: Mapped[str] = mapped_column(
-    #     String(256),
-    #     default=current_active_user.id,
-    #     onupdate=current_active_user.id,
-    #     comment="更新人",
-    # )
+    create_by: Mapped[str] = mapped_column(String(256), default=0, comment="创建人")
+    update_by: Mapped[str] = mapped_column(
+        String(256),
+        default=0,
+        comment="更新人",
+    )
     is_deleted: Mapped[bool] = mapped_column(Boolean, default=False, comment="软删除")

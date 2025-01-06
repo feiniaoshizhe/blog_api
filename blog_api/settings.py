@@ -44,9 +44,9 @@ class Settings(BaseSettings):
     # Variables for the database
     db_host: str = "localhost"
     db_port: int = 3306
-    db_user: str = "blog_api"
-    db_pass: str = "blog_api"
-    db_base: str = "admin"
+    db_user: str = "root"
+    db_pass: str = "mysql"
+    db_base: str = "blog"
     db_echo: bool = False
 
     # Variables for Redis
