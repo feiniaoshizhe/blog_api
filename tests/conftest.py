@@ -1,24 +1,23 @@
-import asyncio
-import sys
-import uuid
-from asyncio.events import AbstractEventLoop
-from typing import Any, AsyncGenerator, Generator
-from unittest.mock import Mock
+from typing import Any, AsyncGenerator
 
 import pytest
-from fastapi import FastAPI
-from httpx import AsyncClient
 from fakeredis import FakeServer
 from fakeredis.aioredis import FakeConnection
+from fastapi import FastAPI
+from httpx import AsyncClient
 from redis.asyncio import ConnectionPool
-from blog_api.services.redis.dependency import get_redis_pool
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 
-from blog_api.settings import settings
-from blog_api.web.application import get_app
-from sqlalchemy.ext.asyncio import (AsyncConnection, AsyncEngine, AsyncSession,
-                                    async_sessionmaker, create_async_engine)
-from blog_api.db.dependencies import get_db_session
-from blog_api.db.utils import create_database, drop_database
+from app.core.config import settings
+from app.db.dependencies import get_db_session
+from app.db.utils import create_database, drop_database
+from app.services.redis.dependency import get_redis_pool
+from app.web.application import get_app
 
 
 @pytest.fixture(scope="session")
@@ -28,7 +27,9 @@ def anyio_backend() -> str:
 
     :return: backend name.
     """
-    return 'asyncio'
+    return "asyncio"
+
+
 @pytest.fixture(scope="session")
 async def _engine() -> AsyncGenerator[AsyncEngine, None]:
     """
@@ -36,8 +37,8 @@ async def _engine() -> AsyncGenerator[AsyncEngine, None]:
 
     :yield: new engine.
     """
-    from blog_api.db.meta import meta  # noqa: WPS433
-    from blog_api.db.models import load_all_models  # noqa: WPS433
+    from app.models.meta import meta  # noqa: WPS433
+    from app.models import load_all_models  # noqa: WPS433
 
     load_all_models()
 
@@ -52,6 +53,7 @@ async def _engine() -> AsyncGenerator[AsyncEngine, None]:
     finally:
         await engine.dispose()
         await drop_database()
+
 
 @pytest.fixture
 async def dbsession(
@@ -82,6 +84,7 @@ async def dbsession(
         await trans.rollback()
         await connection.close()
 
+
 @pytest.fixture
 async def fake_redis_pool() -> AsyncGenerator[ConnectionPool, None]:
     """
@@ -96,6 +99,7 @@ async def fake_redis_pool() -> AsyncGenerator[ConnectionPool, None]:
     yield pool
 
     await pool.disconnect()
+
 
 @pytest.fixture
 def fastapi_app(
@@ -115,8 +119,7 @@ def fastapi_app(
 
 @pytest.fixture
 async def client(
-    fastapi_app: FastAPI,
-    anyio_backend: Any
+    fastapi_app: FastAPI, anyio_backend: Any
 ) -> AsyncGenerator[AsyncClient, None]:
     """
     Fixture that creates client for requesting server.
@@ -125,4 +128,4 @@ async def client(
     :yield: client for the app.
     """
     async with AsyncClient(app=fastapi_app, base_url="http://test", timeout=2.0) as ac:
-            yield ac
+        yield ac

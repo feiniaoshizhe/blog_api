@@ -1,1 +1,1 @@
-"""Tests for blog_api."""
+"""Tests for app."""
