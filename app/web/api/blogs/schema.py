@@ -6,9 +6,12 @@ Author: youshun xu
 File: schema
 Time: 2025/3/6 18:27
 """
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
-class BlogModelDTO(BaseModel):
+class ArticleModelInputDTO(BaseModel):
+    title: str = Field()
+    category: str = Field()
+    content: str = Field()
 
     model_config = ConfigDict(from_attributes=True)

@@ -27,9 +27,9 @@ class BaseResponse(BaseModel, Generic[T]):
     data: Optional[T] = None
 
     @staticmethod
-    def success_response(data: Any):
-        return BaseResponse(code=200, message="success", data=data)
+    def success(code: int = 200, message: str = "success", data: Any | None = None):
+        return BaseResponse(code=code, message=message, data=data)
 
     @staticmethod
-    def error_response(code: int, message: str):
+    def error(code: int = 201, message: str = "failed"):
         return BaseResponse(code=code, message=message)

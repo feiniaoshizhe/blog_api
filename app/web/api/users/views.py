@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.models import (
+from app.models.user.users import (
     UserCreate,  # type: ignore
     UserRead,  # type: ignore
     UserUpdate,  # type: ignore
