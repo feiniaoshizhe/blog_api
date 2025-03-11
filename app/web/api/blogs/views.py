@@ -6,53 +6,63 @@ Author: youshun xu
 File: views
 Time: 2025/3/6 16:05
 """
+from typing import List
 
 from fastapi import APIRouter, Depends
 
 from app.common.request import FilterParams
-from app.common.response import BaseResponse, PageInfo
+from app.common.response import BaseResponse
 from app.services import BlogService
 from app.web.api.blogs.schema import ArticleModelInputDTO
 
-router = APIRouter(prefix="/blogs")
+router = APIRouter(prefix="/article")
 
 
 @router.get("")
-async def get_blogs(
+async def query_by_pagination(
     filter_query: FilterParams = Depends(FilterParams),
     blog_service: BlogService = Depends(),
 ):
-    articles = await blog_service.query(
-        limit=filter_query.limit, offset=filter_query.offset
+    page_info, items = await blog_service.query_by_pagination(
+        page=filter_query.page, page_size=filter_query.page_size
     )
-    return BaseResponse.success(data=PageInfo(items=articles))
+    return BaseResponse.success(data=items, page_info=page_info)
 
 
-@router.get("/{blog_id}")
-async def get_blog_by_id(blog_id: int, blog_service: BlogService = Depends()):
-    pass
+@router.get("/{article_id}")
+async def query_by_id(article_id: int, blog_service: BlogService = Depends()):
+    data = await blog_service.query_one(article_id=article_id)
+    return BaseResponse.success(data=data)
 
 
 @router.post("")
-async def create_blog(
-    article: ArticleModelInputDTO, blog_service: BlogService = Depends()
-):
-    article_id = await blog_service.create(
+async def create(article: ArticleModelInputDTO, blog_service: BlogService = Depends()):
+    article = await blog_service.create(
         title=article.title,
         content=article.content,
         category=article.category,
         remark="",
     )
-    if not article_id:
+    if not article:
         return BaseResponse.error()
-    return BaseResponse.success(data={"article_id": article_id})
+    return BaseResponse.success(data={"article_id": article.id})
 
 
-@router.put("/{blog_id}")
-async def update_blog(blog_id: int, blog_service: BlogService = Depends()):
+@router.put("/{article_id}")
+async def update(article_id: int, blog_service: BlogService = Depends()):
     pass
 
 
-@router.delete("/{blog_id}")
-async def delete_blog(blog_id: str, blog_service: BlogService = Depends()):
+@router.put("/all")
+async def update_all(article_id: int, blog_service: BlogService = Depends()):
+    pass
+
+
+@router.delete("/{article_id}")
+async def delete(article_id: int, blog_service: BlogService = Depends()):
+    pass
+
+
+@router.delete("/all")
+async def delete_all(article_ids: List[int], blog_service: BlogService = Depends()):
     pass

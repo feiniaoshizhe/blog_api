@@ -12,12 +12,12 @@ from typing import Literal
 class FilterParams:
     def __init__(
         self,
-        offset: int = 1,
-        limit: int = 10,
+        page: int = 1,
+        page_size: int = 10,
         order_by: Literal["created_at", "update_at"] = "created_at",
         keys: str | None = None,
     ):
-        self.offset = offset
-        self.limit = limit
+        self.page = page
+        self.page_size = page_size
         self.order_by = order_by
         self.keys = (keys or "").split(",")
