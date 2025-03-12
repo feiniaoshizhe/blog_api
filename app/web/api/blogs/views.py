@@ -10,7 +10,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends
 
-from app.common.request import FilterParams
+from app.common.request import PaginationQueryParams
 from app.common.response import BaseResponse
 from app.services import BlogService
 from app.web.api.blogs.schema import ArticleModelInputDTO
@@ -20,11 +20,11 @@ router = APIRouter(prefix="/article")
 
 @router.get("")
 async def query_by_pagination(
-    filter_query: FilterParams = Depends(FilterParams),
+    pagination_query: PaginationQueryParams = Depends(PaginationQueryParams),
     blog_service: BlogService = Depends(),
 ):
     page_info, items = await blog_service.query_by_pagination(
-        page=filter_query.page, page_size=filter_query.page_size
+        page=pagination_query.page, page_size=pagination_query.page_size
     )
     return BaseResponse.success(data=items, page_info=page_info)
 
@@ -60,9 +60,12 @@ async def update_all(article_id: int, blog_service: BlogService = Depends()):
 
 @router.delete("/{article_id}")
 async def delete(article_id: int, blog_service: BlogService = Depends()):
+    await blog_service.delete(article_id=article_id)
     pass
 
 
 @router.delete("/all")
 async def delete_all(article_ids: List[int], blog_service: BlogService = Depends()):
+    for article_id in article_ids:
+        await blog_service.delete(article_id=article_id)
     pass

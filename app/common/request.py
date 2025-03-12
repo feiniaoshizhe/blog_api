@@ -9,7 +9,7 @@ Time: 2025/3/6 19:01
 from typing import Literal
 
 
-class FilterParams:
+class PaginationQueryParams:
     def __init__(
         self,
         page: int = 1,
